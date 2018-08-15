@@ -1,42 +1,71 @@
 require('./bootstrap');
+var room = $('#room').val();
+Echo.channel(room)
+.listen('MessageSent', (e) => {
+    var str = '<li class="left clearfix">'
+    +'<div class="chat-body clearfix">'
+    +'<div class="header">'
+    +'<strong class="primary-font">'
+    +e.user.name
+    +'</strong>'
+    +'</div>'
+    +'<p>'
+    +e.message.message
+    +'</p>'
+    +'</div>'
+    +'</li>'
+    $("#chats").append(str);
+});
 
-window.Vue = require('vue');
+$('#myPanel').animate({
+    scrollTop: $('#myPanel').get(0).scrollHeight}, 1000);
 
-//new
-Vue.component('chat-messages', require('./components/ChatMessages.vue'));
+var base_url = window.location.origin + '/chat/public';
 
-Vue.component('chat-form', require('./components/ChatForm.vue'));
-
-const app = new Vue({
-    el: '#chat',
-
-    data: {
-        messages: [],
-    },
-
-    created() {
-        this.fetchMessages();
-        Echo.private(room)
-        .listen('MessageSent', (e) => {
-          this.messages.push({
-            message: e.message.message,
-            user: e.user
-        });
-      });
-    },
-
-    methods: {
-        fetchMessages() {
-            axios.get('http://localhost/chat/public/messages').then(response => {
-                this.messages = response.data;
-            });
+function sendMessage(){
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+    $.ajax({
+        url: base_url+'/messages',
+        data: {
+            textmess : $("#textmess").val()
         },
-
-        addMessage(message) {
-            this.messages.push(message);
-            axios.post('http://localhost/chat/public/messages', message).then(response => {
-            });
+        type: 'post',
+        dataType: 'json',
+        success: function (response){
+            $('#textmess').val('');
+            $('#myPanel').animate({
+                scrollTop: $('#myPanel').get(0).scrollHeight}, 1000);
+            var str = '<li class="left clearfix">'
+            +'<div class="chat-body clearfix">'
+            +'<div class="header">'
+            +'<strong class="primary-font">'
+            +response.user.name
+            +'</strong>'
+            +'</div>'
+            +'<p>'
+            +response.message.message
+            +'</p>'
+            +'</div>'
+            +'</li>'
+            $("#chats").append(str);
         },
+        error : function(xhr, textStatus, errorThrown) { 
+            alert('Ajax request failed.'); 
+        }
+    });
+}
+
+$("#btn-chat").click(function(){
+    sendMessage();
+})
+
+$('#textmess').keypress(function(event){
+    var keycode = (event.keyCode ? event.keyCode : event.which);
+    if(keycode == '13'){
+        sendMessage();
     }
-
 });

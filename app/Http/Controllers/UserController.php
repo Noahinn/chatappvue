@@ -45,10 +45,9 @@ class UserController extends Controller {
 			$this->saveToDB($user_id, $friend_id, 'send');
 			$this->saveToDB($friend_id, $user_id, 'receiver');
 		}
-		// return response()->json([
-		// 	'user' => $user_id,
-		// 	'friend' => $friend_id,
-		// ]);
+		return response()->json([
+			'nofication' => 'Sent Request',
+		]);
 	}
 
 	public function accept(Request $request) {
@@ -56,6 +55,9 @@ class UserController extends Controller {
 		$friend_id = $request->id;
 		$result1 = Friend::where(['user_id' => $user_id, 'friend_id' => $friend_id])->update(['status' => 'OK']);
 		$result2 = Friend::where(['user_id' => $friend_id, 'friend_id' => $user_id])->update(['status' => 'OK']);
+		return response()->json([
+			'nofication' => 'Successfully!',
+		]);
 	}
 
 	// delete friend
@@ -65,6 +67,10 @@ class UserController extends Controller {
 
 		$deletedRow1 = Friend::where(['user_id' => $user_id, 'friend_id' => $friend_id])->delete();
 		$deletedRow2 = Friend::where(['user_id' => $friend_id, 'friend_id' => $user_id])->delete();
+
+		return response()->json([
+			'nofication' => 'Delete Successfully!',
+		]);
 	}
 
 	public function profile() {

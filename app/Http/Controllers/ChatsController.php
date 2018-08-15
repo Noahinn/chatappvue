@@ -34,7 +34,6 @@ class ChatsController extends Controller {
 			return view('home', ['users' => $users]);
 		}
 		if ($room != 'all') {
-
 			$credentials = [
 				"id" => $room,
 				"user_id" => Auth::user()->id,
@@ -44,7 +43,9 @@ class ChatsController extends Controller {
 			$pieces = explode("-", $room);
 
 			if (DB::table('rooms')->where($credentials)->count() == 1) {
-				return view('chat', ['room' => $room]);
+				$messages = Message::with('user')->where('room_id', Session::get('room'))
+					->get();
+				return view('chat', array('room' => $room, 'messages' => $messages));
 			} else {
 				if (Auth::user()->id != $pieces[1] && Auth::user()->id != $pieces[2]) {
 					return Redirect::to('/');
@@ -89,12 +90,15 @@ class ChatsController extends Controller {
 		$user = Auth::user();
 
 		$message = $user->messages()->create([
-			'message' => $request->input('message'),
+			'message' => $request->input('textmess'),
 			'room_id' => Session::get('room'),
 		]);
 
 		broadcast(new MessageSent($user, $message, Session::get('room')))->toOthers();
 
-		return ['status' => 'Message Sent!'];
+		return Response()->json([
+			'user' => $user,
+			'message' => $message,
+		]);
 	}
 }

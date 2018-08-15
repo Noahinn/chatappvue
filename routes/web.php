@@ -16,7 +16,7 @@ Route::get('/', 'HomeController@index');
 
 Route::get('/chat/{room}', 'ChatsController@room');
 
-Route::get('/chat', 'ChatsController@index');
+//Route::get('/chat', 'ChatsController@index');
 
 Route::get('messages', 'ChatsController@fetchMessages');
 
@@ -28,6 +28,6 @@ Route::post('delete', 'UserController@delete');
 
 Route::post('accept', 'UserController@accept');
 
-Route::post('/search', 'HomeController@search');
+Route::get('/search/{name}', 'HomeController@search');
 
 Route::get('/user/{oi}', 'UserController@profile');

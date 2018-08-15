@@ -64,7 +64,7 @@
                 {{ config('app.name', 'Laravel') }}
             </a>
             <div class="search-container">
-              <input type="text" placeholder="Search.." name="name" id="search" v-on:keyup.13="submit($event)">
+              <input type="text" placeholder="Search.." name="name" id="search">
           </div>
           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
             <span class="navbar-toggler-icon"></span>
@@ -116,7 +116,6 @@
 @yield('content')
 <!-- Scripts -->
 <script src="{{ asset('js/app.js') }}" defer></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/1.0.18/vue.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 @yield('script')
 

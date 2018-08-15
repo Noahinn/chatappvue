@@ -22,16 +22,10 @@
                 </div>
                 @endif
                 <h1> {{$user->email}} </h1>
-                <button style="width: 90px" id="{{$user->id}}" class="add" v-on:click="onClick($event)">Add
+                <button name="add" style="width: 90px" id="{{$user->id}}" class="add">Add
                 </button>
             </div>
             @endforeach
-        </div>
-    </div>
-</div>
-<div class="container">
-    <div class="row justify-content-center">
-        <div id="sea" class="col-md-8">
         </div>
     </div>
 </div>

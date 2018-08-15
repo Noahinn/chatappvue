@@ -39,9 +39,10 @@ class HomeController extends Controller {
 
 	//search user in users table
 	public function search(Request $request) {
-		$user_name = $request->input('name');
-		// $user_name = $request->input('search');
-		$flights = User::select('name', 'email')->where('name', 'like', '%' . $user_name . '%')->get();
-		return $flights;
+		$user_name = $request->name;
+		$flights = User::select('name', 'email', 'id')->where('name', 'like', '%' . $user_name . '%')->get();
+		$friends = Friend::with('user')->where(['user_id' => Auth::user()->id, 'status' => 'OK'])
+			->get();
+		return view('search', array('users' => $flights, 'friends' => $friends));
 	}
 }

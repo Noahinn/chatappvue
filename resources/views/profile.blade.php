@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div id = "app" class="container">
+<div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">
             <input type="hidden" id="room" value="{{Auth::user()->id}}">
@@ -22,7 +22,7 @@
                </div>
                @endif
                <h1> {{$user->user->email}} </h1>
-               <button style="width: 90px" id="{{$user->user->id}}" v-on:click="del($event)">Unfriend
+               <button style="width: 90px" id="{{$user->user->id}}" name="del">Unfriend
                 </button>
             </div>
             @endforeach
@@ -44,9 +44,9 @@
                 </div>
                 @endif
                 <h1> {{$user->user->email}} </h1>
-                <button style="width: 90px" id="{{$user->user->id}}" v-on:click="confirm($event)">Confirm
+                <button style="width: 90px" id="{{$user->user->id}}" name="confirm">Confirm
                 </button>
-                <button style="width: 90px" id="{{$user->user->id}}" v-on:click="del($event)">Delete
+                <button style="width: 90px" id="{{$user->user->id}}" name="del">Delete
                 </button>
             </div>
             @endforeach
@@ -68,7 +68,7 @@
                 </div>
                 @endif
                 <h1> {{$user->user->email}} </h1>
-                <button style="width: 90px" id="{{$user->user->id}}" v-on:click="del($event)">Delete
+                <button style="width: 90px" id="{{$user->user->id}}" name="del">Delete
                 </button>
             </div>
             @endforeach

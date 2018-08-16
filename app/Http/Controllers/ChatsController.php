@@ -4,11 +4,9 @@ namespace App\Http\Controllers;
 use App\Events\MessageSent;
 use App\Message;
 use App\Room;
-use DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Broadcast;
-use Redirect;
 use Session;
 
 class ChatsController extends Controller {
@@ -26,13 +24,22 @@ class ChatsController extends Controller {
 		return view('chat');
 	}
 
-	public function room($room) {
-		Session::put('room', $room);
-		if ($room == "all") {
-			echo Auth::user()->id;
-			$users = DB::select('select * from users');
-			return view('home', ['users' => $users]);
+	public function room(Request $request) {
+		$id = $request->id;
+		// Session::put('room', $room);
+		// if ($room == "all") {
+		// 	echo Auth::user()->id;
+		// 	$users = DB::select('select * from users');
+		// 	return view('home', ['users' => $users]);
+		// }
+		if (Auth::user()->id <= $id) {
+			$room = 'room-' . Auth::user()->id . '-' . $id;
+		} else {
+			$room = 'room-' . $id . '-' . Auth::user()->id;
 		}
+
+		Session::put('room', $room);
+
 		if ($room != 'all') {
 			$credentials = [
 				"id" => $room,
@@ -42,10 +49,14 @@ class ChatsController extends Controller {
 			//Split room
 			$pieces = explode("-", $room);
 
-			if (DB::table('rooms')->where($credentials)->count() == 1) {
+			if (Room::where($credentials)->count() == 1) {
 				$messages = Message::with('user')->where('room_id', Session::get('room'))
 					->get();
-				return view('chat', array('room' => $room, 'messages' => $messages));
+				// return view('chat', array('room' => $room, 'messages' => $messages));
+				return response()->json([
+					'messages' => $messages,
+					'room' => $room,
+				]);
 			} else {
 				if (Auth::user()->id != $pieces[1] && Auth::user()->id != $pieces[2]) {
 					return Redirect::to('/');
@@ -63,9 +74,10 @@ class ChatsController extends Controller {
 					$rooms->save();
 				}
 			}
-			return view('chat', ['room' => $room]);
+			return Response()->json([
+				'room' => $room,
+			]);
 		}
-
 	}
 
 	/**
@@ -87,6 +99,7 @@ class ChatsController extends Controller {
 	 * @return Response
 	 */
 	public function sendMessage(Request $request) {
+		$friend_id = $request->friend_id;
 		$user = Auth::user();
 
 		$message = $user->messages()->create([
@@ -94,7 +107,7 @@ class ChatsController extends Controller {
 			'room_id' => Session::get('room'),
 		]);
 
-		broadcast(new MessageSent($user, $message, Session::get('room')))->toOthers();
+		broadcast(new MessageSent($user, $message, Session::get('room'), $friend_id))->toOthers();
 
 		return Response()->json([
 			'user' => $user,

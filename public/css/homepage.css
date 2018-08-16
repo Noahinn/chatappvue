@@ -1,0 +1,43 @@
+/*column friends*/
+.col-md-3 {
+	background-color: #F2F2F2;
+}
+
+.title {
+	text-align: center;
+	padding-top: 1rem;
+}
+
+.info{
+	display: flex; padding: 5px;
+
+}
+.info:hover{
+	cursor: pointer;
+	background-color: #b5d1ff;
+	transition: 1s all ease;
+}
+.info img{
+	width: 3rem; height: 3rem;
+}
+.info h5{
+	margin:10px 10px;
+}
+.dropdown{
+	position: absolute;
+	right: 0;
+	padding: 5px;
+	    padding-right: 20px;
+}
+.add{
+	width: 90px; border-radius: 0px;border-right-color: white;
+	right: 0;
+}
+.more{
+	margin-left: -4px;border-radius: 0px;
+}
+
+/*column form chat*/
+.col-md-6{
+	background-color: #FAFAFA;
+}

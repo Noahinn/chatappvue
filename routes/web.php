@@ -14,13 +14,13 @@ Auth::routes();
 
 Route::get('/', 'HomeController@index');
 
-Route::get('/chat/{room}', 'ChatsController@room');
+Route::post('room', 'ChatsController@room');
 
 //Route::get('/chat', 'ChatsController@index');
 
-Route::get('messages', 'ChatsController@fetchMessages');
+Route::post('messages', 'ChatsController@fetchMessages');
 
-Route::post('messages', 'ChatsController@sendMessage');
+Route::post('sendmessage', 'ChatsController@sendMessage');
 
 Route::post('add', 'UserController@add');
 

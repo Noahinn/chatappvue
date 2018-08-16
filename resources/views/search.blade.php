@@ -25,12 +25,22 @@
 				</div>
 				@endif
 				<h1> {{$user->email}} </h1>
-				@if (in_array($user, $friends))
+				@if (in_array($user->name, $friends))
 				<button style="width: 90px">Friend
+				</button>
+				@else
+				@if (in_array($user->name, $friend_wait))
+				<button style="width: 90px">Watting
+				</button>
+				@else
+				@if (in_array($user->name, $friend_req))
+				<button style="width: 90px">Delete
 				</button>
 				@else
 				<button name="add" style="width: 90px" id="{{$user->id}}" class="add">Add
 				</button>
+				@endif
+				@endif
 				@endif
 			</div>
 			@endforeach

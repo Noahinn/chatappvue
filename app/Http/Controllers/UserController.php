@@ -79,6 +79,9 @@ class UserController extends Controller {
 		//get user Co friend_id = Auth::user()->id
 		$friends_wait = Friend::with('user')->where(['user_id' => Auth::user()->id, 'status' => 'receiver'])->get();
 		$friends_send = Friend::with('user')->where(['user_id' => Auth::user()->id, 'status' => 'send'])->get();
+		// return response()->json([
+		// 	'friends_wait' => $friends_wait,
+		// ]);
 		return view('profile', [
 			'friends_wait' => $friends_wait,
 			'friends' => $friends,

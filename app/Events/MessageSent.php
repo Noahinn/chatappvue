@@ -27,16 +27,18 @@ class MessageSent implements ShouldBroadcast {
 	 */
 	public $message;
 	public $room_id;
+	public $friend_id;
 
 	/**
 	 * Create a new event instance.
 	 *
 	 * @return void
 	 */
-	public function __construct(User $user, Message $message, $room_id) {
+	public function __construct(User $user, Message $message, $room_id, $friend_id) {
 		$this->user = $user;
 		$this->message = $message;
 		$this->room_id = $room_id;
+		$this->friend_id = $friend_id;
 	}
 
 	/**
@@ -46,6 +48,6 @@ class MessageSent implements ShouldBroadcast {
 	 */
 	public function broadcastOn() {
 		$room = Session::get('room');
-		return new Channel($room);
+		return new Channel($this->friend_id);
 	}
 }

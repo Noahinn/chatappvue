@@ -18,8 +18,9 @@
             <div>
                 @foreach ($friends as $user)
                 <div name="info" id="{{$user->user->id}}" class="info">
-                    <img class="rounded-circle" src="{{$user->avatar}}">
+                    <img class="rounded-circle" src="{{$user->user->avatar}}">
                     <h5 class="namefriend-{{$user->user->id}}" id="{{$user->user->id}}">{{$user->user->name}}</h5>
+                    <i class="icon-{{$user->user->id}} icon-no fas fa-circle" style="color:green; display: none"></i>
                 </div>
                 @endforeach
             </div>
@@ -35,7 +36,6 @@
                 <div class="panel-body" id ="myPanel">
                     <ul class="chat" id="chats">
                         <!-- load messages -->
-
                     </ul>
                 </div>
                 <div class="panel-footer">
@@ -60,7 +60,7 @@
         @foreach ($users as $user)
         <div class="info">
             <img class="rounded-circle" src="{{$user->avatar}}">
-            <h5> {{$user->name}} </h5>
+            <h5 class="namefriend-{{$user->id}}"> {{$user->name}} </h5>
             <div class="dropdown">
                 <button name="add" id="{{$user->id}}" class="add btn btn-primary">Add
                 </button>
@@ -68,11 +68,7 @@
                     <i class="fas fa-ellipsis-h"></i>
                 </button>
                 <div class="dropdown-menu">
-                    @if (Auth::user()->id<=$user->id)
-                    <a class="add dropdown-item" href="http://localhost/chat/public/chat/room-{{Auth::user()->id}}-{{$user->id}}">Send Message</a>
-                    @else
-                    <a class="add dropdown-item" id="{{$user->id}}" href="http://localhost/chat/public/chat/room-{{$user->id}}-{{Auth::user()->id}}">Send Message</a>
-                    @endif
+                    <a name="info" class="add dropdown-item" id="{{$user->id}}">Send Message</a>
                 </div>
             </div>
         </div>

@@ -10,7 +10,7 @@
 
 .info{
 	display: flex; padding: 5px;
-
+	align-items:center;
 }
 .info:hover{
 	cursor: pointer;
@@ -23,11 +23,15 @@
 .info h5{
 	margin:10px 10px;
 }
+.icon-no{
+	position: absolute;
+    right: 0; margin-right:2rem;
+}
 .dropdown{
 	position: absolute;
 	right: 0;
 	padding: 5px;
-	    padding-right: 20px;
+	padding-right: 20px;
 }
 .add{
 	width: 90px; border-radius: 0px;border-right-color: white;

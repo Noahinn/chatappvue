@@ -41046,13 +41046,21 @@ module.exports = __webpack_require__(40);
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(10);
+var namefriend;
+
 var room = $('#room').val();
 Echo.channel(room).listen('MessageSent', function (e) {
-  var str = '<li class="left clearfix">' + '<div class="chat-body clearfix">' + '<div class="header">' + '<strong class="primary-font">' + e.user.name + '</strong>' + '</div>' + '<p>' + e.message.message + '</p>' + '</div>' + '</li>';
-  $("#chats").append(str);
+  if (e.user.name == namefriend) {
+    var str = '<li class="left clearfix">' + '<div class="chat-body clearfix">' + '<div class="header">' + '<strong class="primary-font">' + e.user.name + '</strong>' + '</div>' + '<p>' + e.message.message + '</p>' + '</div>' + '</li>';
+    $("#chats").append(str);
+  } else {
+
+    $('.icon-' + friend_id).show();
+  }
 });
 
 var friend_id;
+
 var base_url = window.location.origin + '/chat/public';
 
 function clickButton(str, id) {
@@ -41115,12 +41123,14 @@ $("[name='info']").click(function (event) {
     dataType: 'json',
     success: function success(response) {
       $('#chats').empty();
-      response.messages.forEach(function (item) {
-        var str = '<li class="left clearfix">' + '<div class="chat-body clearfix">' + '<div class="header">' + '<strong class="primary-font">' + item.user.name + '</strong>' + '</div>' + '<p>' + item.message + '</p>' + '</div>' + '</li>';
-        $("#chats").append(str);
-      });
-      $('#myPanel').animate({
-        scrollTop: $('#myPanel').get(0).scrollHeight }, 100);
+      if (response.messages.length > 0) {
+        response.messages.forEach(function (item) {
+          var str = '<li class="left clearfix">' + '<div class="chat-body clearfix">' + '<div class="header">' + '<strong class="primary-font">' + item.user.name + '</strong>' + '</div>' + '<p>' + item.message + '</p>' + '</div>' + '</li>';
+          $("#chats").append(str);
+        });
+        $('#myPanel').animate({
+          scrollTop: $('#myPanel').get(0).scrollHeight }, 100);
+      }
     },
     error: function error(xhr, textStatus, errorThrown) {
       alert('error');
@@ -41144,7 +41154,6 @@ function sendMessage() {
     dataType: 'json',
     success: function success(response) {
       $("#textmess").val('');
-      // $('#myPanel').val('');
       var str = '<li class="left clearfix">' + '<div class="chat-body clearfix">' + '<div class="header">' + '<strong class="primary-font">' + response.user.name + '</strong>' + '</div>' + '<p>' + response.message.message + '</p>' + '</div>' + '</li>';
       $("#chats").append(str);
       $('#myPanel').animate({

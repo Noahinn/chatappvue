@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 use App\Friend;
 use App\User;
-use DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -25,18 +24,15 @@ class HomeController extends Controller {
 	public function index() {
 		//$users = DB::select('select * from users');
 		// note
-		$friends = Friend::with('user')->where('user_id', Auth::user()->id)
-			->get();
+		$friends = Friend::with('user')->where('user_id', Auth::user()->id)->get();
 		//print_r($friends);
 		$friend_ids = array();
 		foreach ($friends as $friend) {
 			array_push($friend_ids, $friend->user->id);
 		}
 		array_push($friend_ids, Auth::user()->id);
-		$listfriends = Friend::with('user')->where(['user_id' => Auth::user()->id, 'status' => 'OK'])
-			->get();
-		$users = DB::table('users')
-			->whereNotIn('id', $friend_ids)->get();
+		$listfriends = Friend::with('user')->where(['user_id' => Auth::user()->id, 'status' => 'OK'])->get();
+		$users = User::whereNotIn('id', $friend_ids)->get();
 		return view('home', array('users' => $users, 'friends' => $listfriends));
 	}
 

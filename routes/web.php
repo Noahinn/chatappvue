@@ -16,7 +16,7 @@ Route::get('/', 'HomeController@index');
 
 Route::post('room', 'ChatsController@room');
 
-//Route::get('/chat', 'ChatsController@index');
+Route::post('loadmessage', 'ChatsController@loadMessages');
 
 Route::post('messages', 'ChatsController@fetchMessages');
 

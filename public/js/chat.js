@@ -68,20 +68,8 @@
 /***/ 41:
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(42);
+(function webpackMissingModule() { throw new Error("Cannot find module \"C:\\xampp\\htdocs\\chat\\resources\\assets\\js\\chat.js\""); }());
 
-
-/***/ }),
-
-/***/ 42:
-/***/ (function(module, exports) {
-
-
-$(document).on("click", "[name='add']", function (event) {
-  var str = '/add';
-  var id = event.target.id;
-  clickButton(str, id);
-});
 
 /***/ })
 

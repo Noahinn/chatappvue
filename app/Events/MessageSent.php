@@ -34,11 +34,10 @@ class MessageSent implements ShouldBroadcast {
 	 *
 	 * @return void
 	 */
-	public function __construct(User $user, Message $message, $room_id, $friend_id) {
+	public function __construct(User $user, Message $message) {
 		$this->user = $user;
 		$this->message = $message;
-		$this->room_id = $room_id;
-		$this->friend_id = $friend_id;
+		$this->friend_id = $message->recipient_id;
 	}
 
 	/**

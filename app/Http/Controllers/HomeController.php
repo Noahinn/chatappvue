@@ -22,7 +22,7 @@ class HomeController extends Controller {
 	 * @return \Illuminate\Http\Response
 	 */
 	public function index() {
-		//$users = DB::select('select * from users');
+
 		// note
 		$friends = Friend::with('user')->where('user_id', Auth::user()->id)->get();
 		//print_r($friends);

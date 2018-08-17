@@ -1,5 +1,6 @@
 require('./bootstrap');
 var namefriend;
+var recipient_id ="";
 
 var room = $('#room').val();
 Echo.channel(room)
@@ -18,15 +19,15 @@ Echo.channel(room)
    +'</div>'
    +'</li>'
    $("#chats").append(str);
+   $('#myPanel').animate({
+    scrollTop: $('#myPanel').get(0).scrollHeight}, 1000);
  }
  else{
+  $('.icon-'+e.user.id).show();
+}
 
-  $('.icon-'+friend_id).show();
- }
- 
 });
 
-var friend_id;
 
 var base_url = window.location.origin + '/chat/public';
 
@@ -71,10 +72,12 @@ $(document).on( "click","[name='del']" , function(event) {
   clickButton(str, id);
 });
 
-
+// load messages history via click
 $("[name='info']").click(function(event) {
-  friend_id = this.id;
-  namefriend = $('.namefriend-'+friend_id).html();
+  recipient_id ="";
+  recipient_id = this.id;
+  namefriend = $('.namefriend-'+recipient_id).html();
+  $('.icon-'+this.id).hide();
   $('#namefriend').html(namefriend);
   $.ajaxSetup({
     headers: {
@@ -83,15 +86,17 @@ $("[name='info']").click(function(event) {
   });
 
   $.ajax({
-    url: base_url+'/room',
+    url: base_url+'/loadmessage',
     data: {
-      id : friend_id,
+      recipient_id : recipient_id,
     },
     type: 'post',
     dataType: 'json',
     success: function (response){
       $('#chats').empty();
-      if(response.messages.length > 0){
+      if(jQuery.isEmptyObject(response.messages)){
+      }
+      else{
         response.messages.forEach(function(item) {
           var str = '<li class="left clearfix">'
           +'<div class="chat-body clearfix">'
@@ -118,42 +123,44 @@ $("[name='info']").click(function(event) {
   });
 });
 
+// send message function
 function sendMessage(){
-  $.ajaxSetup({
-    headers: {
-      'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-    }
-  });
-  $.ajax({
-    url: base_url+'/sendmessage',
-    data: {
-      textmess : $("#textmess").val(),
-      friend_id: friend_id,
-    },
-    type: 'post',
-    dataType: 'json',
-    success: function (response){
-      $("#textmess").val('');
-      var str = '<li class="left clearfix">'
-      +'<div class="chat-body clearfix">'
-      +'<div class="header">'
-      +'<strong class="primary-font">'
-      +response.user.name
-      +'</strong>'
-      +'</div>'
-      +'<p>'
-      +response.message.message
-      +'</p>'
-      +'</div>'
-      +'</li>'
-      $("#chats").append(str);
-      $('#myPanel').animate({
-        scrollTop: $('#myPanel').get(0).scrollHeight}, 1000);
-    },
-    error : function(xhr, textStatus, errorThrown) { 
-      alert('Ajax request failed.'); 
-    }
-  });
+
+    $.ajaxSetup({
+      headers: {
+        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+      }
+    });
+    $.ajax({
+      url: base_url+'/sendmessage',
+      data: {
+        textmess : $("#textmess").val(),
+        recipient_id: recipient_id,
+      },
+      type: 'post',
+      dataType: 'json',
+      success: function (response){
+        $("#textmess").val('');
+        var str = '<li class="left clearfix">'
+        +'<div class="chat-body clearfix">'
+        +'<div class="header">'
+        +'<strong class="primary-font">'
+        +response.user.name
+        +'</strong>'
+        +'</div>'
+        +'<p>'
+        +response.message.message
+        +'</p>'
+        +'</div>'
+        +'</li>'
+        $("#chats").append(str);
+        $('#myPanel').animate({
+          scrollTop: $('#myPanel').get(0).scrollHeight}, 1000);
+      },
+      error : function(xhr, textStatus, errorThrown) { 
+        alert('Ajax request failed.'); 
+      }
+    });
 }
 
 $("#btn-chat").click(function(){
@@ -166,6 +173,7 @@ $('#textmess').keypress(function(event){
     sendMessage();
   }
 });
+
 // $("[name='add']").click(function(){
 //  var str ='/add';
 //  var id = $("[name='add']").attr('id');

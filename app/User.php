@@ -39,4 +39,7 @@ class User extends Authenticatable {
 	public function friends() {
 		return $this->hasMany(Friend::class, 'id', 'user_id');
 	}
+	public function statuss() {
+		return $this->hasMany(Status::class, 'id', 'user_id');
+	}
 }

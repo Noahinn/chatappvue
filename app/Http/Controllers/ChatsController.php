@@ -6,14 +6,13 @@ use App\Message;
 use App\Room;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Broadcast;
 use Session;
 
 class ChatsController extends Controller {
 	//
-	public function __construct() {
-		$this->middleware('auth');
-	}
+	// public function __construct() {
+	// 	$this->middleware('auth');
+	// }
 
 	/**
 	 * Show chats
@@ -24,6 +23,7 @@ class ChatsController extends Controller {
 		return view('chat');
 	}
 
+// NOT USED
 	public function room(Request $request) {
 		$id = $request->id;
 		// Session::put('room', $room);
@@ -80,13 +80,34 @@ class ChatsController extends Controller {
 		}
 	}
 
+	public function loadMessages(Request $request) {
+		$user_id = Auth::user()->id;
+		$recipient_id = $request->input('recipient_id');
+		if ($user_id <= $recipient_id) {
+			$con_id = (string) $user_id . (string) $recipient_id;
+		} else {
+			$con_id = (string) $recipient_id . (string) $user_id;
+		}
+
+		if (Message::where('con_id', $con_id)->count() > 0) {
+			$messages = Message::with('user')->where('con_id', $con_id)->get();
+			return response()->json([
+				'messages' => $messages,
+			]);
+		} else {
+			return Response()->json([
+				'notification' => 'not messages',
+			]);
+		}
+
+	}
+
 	/**
 	 * Fetch all messages
 	 *
 	 * @return Message
 	 */
 	public function fetchMessages() {
-
 		$messages = Message::with('user')->where('room_id', Session::get('room'))
 			->get();
 		return $messages;
@@ -99,15 +120,25 @@ class ChatsController extends Controller {
 	 * @return Response
 	 */
 	public function sendMessage(Request $request) {
-		$friend_id = $request->friend_id;
 		$user = Auth::user();
+		$user_id = $user->id;
+		$recipient_id = $request->input('recipient_id');
+		$mess = $request->input('textmess');
 
-		$message = $user->messages()->create([
-			'message' => $request->input('textmess'),
-			'room_id' => Session::get('room'),
+		if ($user_id <= $recipient_id) {
+			$con_id = $user_id . $recipient_id;
+		} else {
+			$con_id = $recipient_id . $user_id;
+		}
+
+		$message = Message::create([
+			'user_id' => $user_id,
+			'message' => $mess,
+			'recipient_id' => $recipient_id,
+			'con_id' => $con_id,
 		]);
 
-		broadcast(new MessageSent($user, $message, Session::get('room'), $friend_id))->toOthers();
+		broadcast(new MessageSent($user, $message))->toOthers();
 
 		return Response()->json([
 			'user' => $user,

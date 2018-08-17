@@ -20,7 +20,7 @@
                 <div name="info" id="{{$user->user->id}}" class="info">
                     <img class="rounded-circle" src="{{$user->user->avatar}}">
                     <h5 class="namefriend-{{$user->user->id}}" id="{{$user->user->id}}">{{$user->user->name}}</h5>
-                    <i class="icon-{{$user->user->id}} icon-no fas fa-circle" style="color:green; display: none"></i>
+                    <i class="icon-{{$user->user->id}} icon-no fas fa-circle" style="color:red; display: none"></i>
                 </div>
                 @endforeach
             </div>

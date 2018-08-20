@@ -102,7 +102,7 @@ $("[name='info']").click(function(event) {
           +'<div class="chat-body clearfix">'
           +'<div class="header">'
           +'<strong class="primary-font">'
-          +item.user.name
+          +item.name
           +'</strong>'
           +'</div>'
           +'<p>'

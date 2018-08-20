@@ -31,3 +31,11 @@ Route::post('accept', 'UserController@accept');
 Route::get('/search/{name}', 'HomeController@search');
 
 Route::get('/user/{oi}', 'UserController@profile');
+
+Route::post('creategroup', 'ChatsController@createGroup');
+
+Route::post('addmem', 'ChatsController@addMemGroup');
+
+Route::post('sendmessagegroup', 'ChatsController@sendMessageGroup');
+
+Route::post('loadmessagegroup', 'ChatsController@loadMessagesGroup');

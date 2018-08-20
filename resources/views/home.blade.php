@@ -20,9 +20,43 @@
                 <div name="info" id="{{$user->user->id}}" class="info">
                     <img class="rounded-circle" src="{{$user->user->avatar}}">
                     <h5 class="namefriend-{{$user->user->id}}" id="{{$user->user->id}}">{{$user->user->name}}</h5>
-                    <i class="icon-{{$user->user->id}} icon-no fas fa-circle" style="color:red; display: none"></i>
+                    <i class="icon-{{$user->user->id}} icon-no fas fa-circle"></i>
+                    <div class="dropdown">
+                        <button class="more btn btn-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown">
+                            <i class="fas fa-ellipsis-h"></i>
+                        </button>
+                        <div class="dropdown-menu">
+                            <a name="info" class="dropdown-item" id="{{$user->user->id}}" data-toggle="modal" data-target="#exampleModal">Add to group</a>
+                        </div>
+                        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabel">New Group</h5>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form>
+                                            <div class="form-group">
+                                                <label for="recipient-name" class="col-form-label">Name:
+                                                </label>
+                                                <input type="text" class="form-control" id="recipient-name">
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-primary">OK
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 @endforeach
+            </div>
+
+            <div class="title">
+                <h5>Group</h5>
             </div>
         </div>
 
@@ -53,7 +87,7 @@
 
         <!-- row user -->
         <div class="col-md-3">
-         <div class="title">
+           <div class="title">
             <h5>Others</h5>
         </div>
         <hr>

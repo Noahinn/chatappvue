@@ -25,7 +25,9 @@
 }
 .icon-no{
 	position: absolute;
-    right: 0; margin-right:2rem;
+    right: 0; margin-right:5rem;
+    color:red;
+    display: none;
 }
 .dropdown{
 	position: absolute;

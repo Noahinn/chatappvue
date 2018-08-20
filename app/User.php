@@ -42,4 +42,10 @@ class User extends Authenticatable {
 	public function statuss() {
 		return $this->hasMany(Status::class, 'id', 'user_id');
 	}
+	public function userGroup() {
+		return $this->hasMany(UserGroup::class, 'id', 'user_id');
+	}
+	public function MessageRec() {
+		return $this->hasMany(MessageRecipient::class, 'id', 'recipient_id');
+	}
 }

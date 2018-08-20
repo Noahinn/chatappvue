@@ -4,14 +4,15 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Message extends Model {
+class UserGroup extends Model {
 
 	/**
 	 * Fields that are mass assignable
 	 *
 	 * @var array
 	 */
-	protected $fillable = ['message', 'room_id', 'user_id', 'recipient_id', 'con_id'];
+	protected $table = 'users_group';
+	protected $fillable = ['user_id', 'group_id'];
 
 	/**
 	 * A message belong to a user
@@ -20,8 +21,5 @@ class Message extends Model {
 	 */
 	public function user() {
 		return $this->belongsTo(User::class);
-	}
-	public function messageRec() {
-		return $this->hasOne(MessageRecipient::class, 'id', 'message_id');
 	}
 }

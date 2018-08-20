@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers;
 use App\Events\MessageSent;
+use App\Group;
 use App\Message;
+use App\MessageRecipient;
 use App\Room;
+use App\User;
+use App\UserGroup;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Session;
@@ -26,12 +30,6 @@ class ChatsController extends Controller {
 // NOT USED
 	public function room(Request $request) {
 		$id = $request->id;
-		// Session::put('room', $room);
-		// if ($room == "all") {
-		// 	echo Auth::user()->id;
-		// 	$users = DB::select('select * from users');
-		// 	return view('home', ['users' => $users]);
-		// }
 		if (Auth::user()->id <= $id) {
 			$room = 'room-' . Auth::user()->id . '-' . $id;
 		} else {
@@ -80,28 +78,83 @@ class ChatsController extends Controller {
 		}
 	}
 
-	public function loadMessages(Request $request) {
-		$user_id = Auth::user()->id;
-		$recipient_id = $request->input('recipient_id');
-		if ($user_id <= $recipient_id) {
-			$con_id = (string) $user_id . (string) $recipient_id;
-		} else {
-			$con_id = (string) $recipient_id . (string) $user_id;
-		}
+	public function createGroup(Request $request) {
+		$user_id1 = $request->input('user1');
+		$user_id2 = $request->input('user2');
+		$name = $request->input('name');
 
-		if (Message::where('con_id', $con_id)->count() > 0) {
-			$messages = Message::with('user')->where('con_id', $con_id)->get();
-			return response()->json([
-				'messages' => $messages,
-			]);
-		} else {
-			return Response()->json([
-				'notification' => 'not messages',
-			]);
-		}
+		Group::create([
+			'name' => $name,
+		]);
+
+		$group_ids = Group::orderBy('id', 'asd')->where('name', $name)->first();
+
+		UserGroup::create([
+			'user_id' => $user_id1,
+			'group_id' => $group_ids->id,
+		]);
+
+		UserGroup::create([
+			'user_id' => $user_id2,
+			'group_id' => $group_ids->id,
+		]);
+
+		return Response()->json([
+			'name' => $name,
+			'group_id' => $group_ids->id,
+		]);
 
 	}
 
+	public function addMemGroup(Request $request) {
+		$group_id = $request->input('group_id');
+		$user_id = $request->input('user_id');
+
+		UserGroup::create([
+			'user_id' => $user_id,
+			'group_id' => $group_id,
+		]);
+
+		return Response()->json([
+			'user_id' => $user_id,
+			'group_id' => $group_id,
+		]);
+
+	}
+
+	public function loadMessages(Request $request) {
+		// $user_id = $request->input('user_id');
+		$user_id = Auth::user()->id;
+		$recipient_id = $request->input('recipient_id');
+
+		if ($user_id <= $recipient_id) {
+			$con_id = (string) $user_id . 'private' . (string) $recipient_id;
+		} else {
+			$con_id = (string) $recipient_id . 'private' . (string) $user_id;
+		}
+
+		$messages = User::join('messages', 'messages.user_id', '=', 'users.id')
+			->join('messages_recipient', 'messages_recipient.message_id', '=', 'messages.id')
+			->select('users.*', 'messages.*')
+			->where(['con_id' => $con_id])->get();
+
+		return Response()->json([
+			'messages' => $messages,
+		]);
+	}
+
+	public function loadMessagesGroup(Request $request) {
+		// $user_id = $request->input('user_id');
+		// $user_id = Auth::user()->id;
+		$recipient_group_id = $request->input('recipient_group_id');
+		$con_id = 'group' . $recipient_group_id;
+
+		$messages = Message::where(['con_id' => $con_id])->get();
+
+		return Response()->json([
+			'messages' => $messages,
+		]);
+	}
 	/**
 	 * Fetch all messages
 	 *
@@ -113,36 +166,76 @@ class ChatsController extends Controller {
 		return $messages;
 	}
 
-	/**	 * Fetch all messages
-	 * Persist message to database
-	 *
-	 * @param  Request $request
-	 * @return Response
-	 */
 	public function sendMessage(Request $request) {
 		$user = Auth::user();
+		// $user_id = $request->input('user_id');
 		$user_id = $user->id;
 		$recipient_id = $request->input('recipient_id');
 		$mess = $request->input('textmess');
 
 		if ($user_id <= $recipient_id) {
-			$con_id = $user_id . $recipient_id;
+			$con_id = $user_id . 'private' . $recipient_id;
 		} else {
-			$con_id = $recipient_id . $user_id;
+			$con_id = $recipient_id . 'private' . $user_id;
 		}
 
 		$message = Message::create([
 			'user_id' => $user_id,
 			'message' => $mess,
-			'recipient_id' => $recipient_id,
 			'con_id' => $con_id,
 		]);
 
-		broadcast(new MessageSent($user, $message))->toOthers();
+		$message_id = Message::orderBy('id', 'asd')->first();
+
+		$messageRecipient = MessageRecipient::create([
+			'recipient_id' => $recipient_id,
+			'message_id' => $message_id->id,
+		]);
+
+		broadcast(new MessageSent($user, $message, $recipient_id))->toOthers();
+
+		// return Response()->json([
+		// 	'user_id' => $user_id,
+		// 	'recipient_id' => $recipient_id,
+		// 	'message_id' => $message_id->id,
+		// ]);
 
 		return Response()->json([
 			'user' => $user,
 			'message' => $message,
 		]);
+	}
+
+	public function sendMessageGroup(Request $request) {
+		$user_id = $request->input('user_id');
+		$recipient_group_id = $request->input('recipient_group_id');
+		$mess = $request->input('textmess');
+		$con_id = 'group' . $recipient_group_id;
+
+		$message = Message::create([
+			'user_id' => $user_id,
+			'message' => $mess,
+			'con_id' => $con_id,
+		]);
+
+		$message_id = Message::orderBy('id', 'asd')->first();
+
+		$messageRecipient = MessageRecipient::create([
+			'recipient_group_id' => $recipient_group_id,
+			'message_id' => $message_id->id,
+		]);
+		$channel_id = 'group' . $recipient_group_id;
+
+		// broadcast(new MessageSent($user, $message, $channel_id))->toOthers();
+
+		return Response()->json([
+			'user_id' => $user_id,
+			'recipient_group_id' => $recipient_group_id,
+			'message_id' => $message_id->id,
+		]);
+		// return Response()->json([
+		// 	'user' => $user,
+		// 	'message' => $message,
+		// ]);
 	}
 }

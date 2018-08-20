@@ -41128,7 +41128,7 @@ $("[name='info']").click(function (event) {
       $('#chats').empty();
       if (jQuery.isEmptyObject(response.messages)) {} else {
         response.messages.forEach(function (item) {
-          var str = '<li class="left clearfix">' + '<div class="chat-body clearfix">' + '<div class="header">' + '<strong class="primary-font">' + item.user.name + '</strong>' + '</div>' + '<p>' + item.message + '</p>' + '</div>' + '</li>';
+          var str = '<li class="left clearfix">' + '<div class="chat-body clearfix">' + '<div class="header">' + '<strong class="primary-font">' + item.name + '</strong>' + '</div>' + '<p>' + item.message + '</p>' + '</div>' + '</li>';
           $("#chats").append(str);
         });
         $('#myPanel').animate({

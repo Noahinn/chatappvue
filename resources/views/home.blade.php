@@ -26,30 +26,9 @@
                             <i class="fas fa-ellipsis-h"></i>
                         </button>
                         <div class="dropdown-menu">
-                            <a name="info" class="dropdown-item" id="{{$user->user->id}}" data-toggle="modal" data-target="#exampleModal">Add to group</a>
+                            <a id ="myModal" name="{{$user->user->id}}" class="addgroup dropdown-item" data-toggle="modal" data-target="#exampleModal">Add to group</a>
                         </div>
-                        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                            <div class="modal-dialog" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="exampleModalLabel">New Group</h5>
-                                    </div>
-                                    <div class="modal-body">
-                                        <form>
-                                            <div class="form-group">
-                                                <label for="recipient-name" class="col-form-label">Name:
-                                                </label>
-                                                <input type="text" class="form-control" id="recipient-name">
-                                            </div>
-                                        </form>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-primary">OK
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+
                     </div>
                 </div>
                 @endforeach
@@ -57,6 +36,15 @@
 
             <div class="title">
                 <h5>Group</h5>
+            </div>
+            <hr>
+            <div>
+                @foreach ($listgroups as $group)
+                <div name="infogroup" id="{{$group->id}}" class="info">
+                    <input type="hidden" id="channelgroup" value="{{$group->name}}">
+                    <h5 class="namegroup-{{$group->id}}" id="{{$group->id}}">{{$group->name}}</h5>
+                </div>
+                @endforeach
             </div>
         </div>
 
@@ -87,7 +75,7 @@
 
         <!-- row user -->
         <div class="col-md-3">
-           <div class="title">
+         <div class="title">
             <h5>Others</h5>
         </div>
         <hr>
@@ -102,7 +90,7 @@
                     <i class="fas fa-ellipsis-h"></i>
                 </button>
                 <div class="dropdown-menu">
-                    <a name="info" class="add dropdown-item" id="{{$user->id}}">Send Message</a>
+                    <a name="infouser" class="add dropdown-item" id="{{$user->id}}">Send Message</a>
                 </div>
             </div>
         </div>
@@ -110,7 +98,28 @@
     </div>
 </div>
 </div>
-
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">New Group</h5>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="recipient-name" class="col-form-label">Name:
+                        </label>
+                        <input type="text" class="form-control" id="recipient-name">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button name="addgroup" type="button" class="btn btn-primary" data-dismiss="modal">Create Group
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 @stop
 @section('script')
 <script src="{{ asset('js/homepage.js') }}"></script>

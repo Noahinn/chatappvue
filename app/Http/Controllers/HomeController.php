@@ -33,7 +33,15 @@ class HomeController extends Controller {
 		array_push($friend_ids, Auth::user()->id);
 		$listfriends = Friend::with('user')->where(['user_id' => Auth::user()->id, 'status' => 'OK'])->get();
 		$users = User::whereNotIn('id', $friend_ids)->get();
-		return view('home', array('users' => $users, 'friends' => $listfriends));
+
+		$listgroups = User::join('users_group', 'users_group.user_id', '=', 'users.id')
+			->join('groups', 'groups.id', '=', 'users_group.group_id')
+			->select('users.*', 'groups.*')
+			->where(['user_id' => Auth::user()->id])->get();
+		return view('home', array(
+			'users' => $users,
+			'friends' => $listfriends,
+			'listgroups' => $listgroups));
 	}
 
 	//search user in users table

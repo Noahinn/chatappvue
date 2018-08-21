@@ -12,7 +12,7 @@ class Group extends Model {
 	 * @var array
 	 */
 	protected $table = 'groups';
-	protected $fillable = ['name'];
+	protected $fillable = ['name', 'group_id'];
 
 	/**
 	 * A message belong to a user

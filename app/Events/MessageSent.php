@@ -8,7 +8,6 @@ use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use Session;
 
 class MessageSent implements ShouldBroadcast {
 	use Dispatchable, InteractsWithSockets, SerializesModels;
@@ -45,8 +44,18 @@ class MessageSent implements ShouldBroadcast {
 	 *
 	 * @return Channel|array
 	 */
+	// public function broadcastOn() {
+	// 	$room = Session::get('room');
+	// 	return new Channel($this->friend_id);
+	// }
+
 	public function broadcastOn() {
-		$room = Session::get('room');
-		return new Channel($this->friend_id);
+		$channels = [];
+
+		foreach ($this->group->users as $user) {
+			array_push($channels, new PrivateChannel($user->id));
+		}
+
+		return $channels;
 	}
 }

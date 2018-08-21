@@ -10,7 +10,7 @@
 |
  */
 
-Broadcast::channel('{room}', function ($user) {
+Broadcast::channel('g1', function ($user) {
 	//Check login
 	return Auth::check();
 });

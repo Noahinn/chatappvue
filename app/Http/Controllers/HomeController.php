@@ -35,7 +35,7 @@ class HomeController extends Controller {
 		$users = User::whereNotIn('id', $friend_ids)->get();
 
 		$listgroups = User::join('users_group', 'users_group.user_id', '=', 'users.id')
-			->join('groups', 'groups.id', '=', 'users_group.group_id')
+			->join('groups', 'groups.group_id', '=', 'users_group.group_id')
 			->select('users.*', 'groups.*')
 			->where(['user_id' => Auth::user()->id])->get();
 		return view('home', array(

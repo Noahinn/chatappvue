@@ -44,18 +44,9 @@ class MessageSent implements ShouldBroadcast {
 	 *
 	 * @return Channel|array
 	 */
-	// public function broadcastOn() {
-	// 	$room = Session::get('room');
-	// 	return new Channel($this->friend_id);
-	// }
-
 	public function broadcastOn() {
-		$channels = [];
-
-		foreach ($this->group->users as $user) {
-			array_push($channels, new PrivateChannel($user->id));
-		}
-
-		return $channels;
+		// $room = Session::get('room');
+		return new Channel((string) $this->friend_id);
 	}
+
 }

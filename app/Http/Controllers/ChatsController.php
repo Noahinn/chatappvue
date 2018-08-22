@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 use App\Events\MessageSent;
+use App\Friend;
 use App\Group;
 use App\Message;
 use App\MessageRecipient;
-use App\Room;
 use App\User;
 use App\UserGroup;
 use Illuminate\Http\Request;
@@ -27,102 +27,79 @@ class ChatsController extends Controller {
 		return view('chat');
 	}
 
-// NOT USED
-	public function room(Request $request) {
-		$id = $request->id;
-		if (Auth::user()->id <= $id) {
-			$room = 'room-' . Auth::user()->id . '-' . $id;
-		} else {
-			$room = 'room-' . $id . '-' . Auth::user()->id;
-		}
-
-		Session::put('room', $room);
-
-		if ($room != 'all') {
-			$credentials = [
-				"id" => $room,
-				"user_id" => Auth::user()->id,
-			];
-
-			//Split room
-			$pieces = explode("-", $room);
-
-			if (Room::where($credentials)->count() == 1) {
-				$messages = Message::with('user')->where('room_id', Session::get('room'))
-					->get();
-				// return view('chat', array('room' => $room, 'messages' => $messages));
-				return response()->json([
-					'messages' => $messages,
-					'room' => $room,
-				]);
-			} else {
-				if (Auth::user()->id != $pieces[1] && Auth::user()->id != $pieces[2]) {
-					return Redirect::to('/');
-				}
-				//Create new room with user 1
-				$rooms = new Room;
-				$rooms->id = $room;
-				$rooms->user_id = $pieces[1];
-				$rooms->save();
-				if ($pieces[2] != $pieces[1]) {
-					//Create new room with user 2
-					$rooms = new Room;
-					$rooms->id = $room;
-					$rooms->user_id = $pieces[2];
-					$rooms->save();
-				}
-			}
-			return Response()->json([
-				'room' => $room,
-			]);
-		}
+	public function loadFriend(Request $request) {
+		// $user_id = $request->input('user_id');
+		$group_id = $request->input('group_id');
+		$user_in_group = UserGroup::select('user_id')->where('group_id', $group_id)->get();
+		$listfriends_not_group = Friend::with('user')
+			->where(['user_id' => Auth::user()->id, 'status' => 'OK'])
+			->whereNotIn('friend_id', $user_in_group)
+			->get();
+		return response()->json([
+			'friends' => $listfriends_not_group,
+		]);
 	}
 
 	public function createGroup(Request $request) {
 		$user_id1 = Auth::user()->id;
+		// $user_id1 = $request->input('user_id_1');
 		$user_id2 = $request->input('user_id_2');
 		$name = $request->input('name');
 
 		$date = new \DateTime();
 		$now = $date->format('Y') . $date->format('m') . $date->format('d') . $date->format('H') . $date->format('i') . $date->format('s') . $date->format('u');
-		// $que->id = $now;
 
 		Group::create([
 			'group_id' => $now,
 			'name' => $name,
 		]);
 
-		$group_ids = Group::orderBy('id', 'asd')->where('name', $name)->first();
-
 		UserGroup::create([
 			'user_id' => $user_id1,
-			'group_id' => $group_ids->id,
+			'group_id' => $now,
 		]);
 
 		UserGroup::create([
 			'user_id' => $user_id2,
-			'group_id' => $group_ids->id,
+			'group_id' => $now,
 		]);
 
 		return Response()->json([
 			'notification' => 'Successfully!',
 		]);
 
+		return Response()->json([
+			'notification' => 'Fail!',
+		]);
+
 	}
 
 	public function addMemGroup(Request $request) {
+		$user_id_add = $request->input('id_member');
 		$group_id = $request->input('group_id');
-		$user_id = $request->input('user_id');
-
-		UserGroup::create([
-			'user_id' => $user_id,
-			'group_id' => $group_id,
-		]);
-
-		return Response()->json([
-			'user_id' => $user_id,
-			'group_id' => $group_id,
-		]);
+		if ($user_id_add == 0) {
+			$user_add = $request->input('user_add');
+			$user_id_add = User::where('name', $user_add)->first();
+			$credentials = [
+				'user_id' => $user_id_add->id,
+				'group_id' => $group_id,
+			];
+		} else {
+			$credentials = [
+				'user_id' => $user_id_add,
+				'group_id' => $group_id,
+			];
+		}
+		if (UserGroup::where($credentials)->count() == 0) {
+			UserGroup::create($credentials);
+			return Response()->json([
+				'notification' => 'Add Successfully!',
+			]);
+		} else {
+			return Response()->json([
+				'notification' => 'User already exist in group!',
+			]);
+		}
 
 	}
 
@@ -229,13 +206,15 @@ class ChatsController extends Controller {
 		]);
 		$channel_id = 'g' . $recipient_group_id;
 
-		broadcast(new MessageSent($user, $message, $namegroup->name))->toOthers();
+		$users = User::join('users_group', 'users_group.user_id', '=', 'users.id')
+			->join('groups', 'groups.id', '=', 'users_group.group_id')
+			->select('users.*')
+			->where(['groups.id' => $recipient_group_id])->get();
 
-		// return Response()->json([
-		// 	'user_id' => $user_id,
-		// 	'recipient_group_id' => $recipient_group_id,
-		// 	'message_id' => $message_id->id,
-		// ]);
+		foreach ($users as $item) {
+			broadcast(new MessageSent($user, $message, $item->id))->toOthers();
+		}
+
 		return Response()->json([
 			'user' => $user,
 			'message' => $message,

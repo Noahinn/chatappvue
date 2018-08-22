@@ -39,3 +39,5 @@ Route::post('addmem', 'ChatsController@addMemGroup');
 Route::post('sendmessagegroup', 'ChatsController@sendMessageGroup');
 
 Route::post('loadmessagegroup', 'ChatsController@loadMessagesGroup');
+
+Route::post('loadfriend', 'ChatsController@loadFriend');

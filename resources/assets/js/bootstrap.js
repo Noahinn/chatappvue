@@ -10,7 +10,6 @@ window.Popper = require('popper.js').default;
 
 try {
     window.$ = window.jQuery = require('jquery');
-
     require('bootstrap');
 } catch (e) {}
 
@@ -45,7 +44,7 @@ if (token) {
  */
 window.Pusher = require('pusher-js');
 
-import Echo from 'laravel-echo'
+import Echo from 'laravel-echo';
 
 window.Echo = new Echo({
     broadcaster: 'pusher',
